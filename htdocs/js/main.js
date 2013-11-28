@@ -21,6 +21,19 @@ $(window).load(function() {
     backgroundFar.tilePosition.y = 0;
     stage.addChild(backgroundFar);
     
+    // mid background
+    var backgroundMidTexture = PIXI.Texture.fromImage("img/background_mid.png");
+    var backgroundMid = new PIXI.TilingSprite(
+	    backgroundMidTexture,
+	    4*1024,
+	    4*128
+    );
+    backgroundMid.position.x = 0;
+    backgroundMid.position.y = canvas.height() - 4*128;
+    backgroundMid.tilePosition.x = 0;
+    backgroundMid.tilePosition.y = 0;
+    stage.addChild(backgroundMid);
+    
     // character
     var characterTexture = PIXI.Texture.fromImage("img/test.png");
     var character = new PIXI.Sprite(characterTexture);
@@ -36,6 +49,7 @@ $(window).load(function() {
 	// update positions
 	character.rotation += 0.01;
 	backgroundFar.tilePosition.x -= 0.5;
+	backgroundMid.tilePosition.x -= 1;
 	
 	// render
 	renderer.render(stage);
