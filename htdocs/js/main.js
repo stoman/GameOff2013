@@ -49,7 +49,7 @@ $(window).load(function() {
 	// update positions
 	character.rotation += 0.01;
 	backgroundFar.tilePosition.x -= 0.5;
-	backgroundMid.tilePosition.x -= 1;
+	backgroundMid.tilePosition.x -= 2;
 	
 	// render
 	renderer.render(stage);
