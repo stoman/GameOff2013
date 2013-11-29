@@ -3,13 +3,16 @@ var test;
 // game data
 var game = {
 	"player": {
-	    "x": 0,
-	    "y": 0,
+	    "position": {
+		"x": 0,
+		"y": 0
+	    },
 	    "speed": {
 		"x": 1,
 		"y": 0
 	    }
 	},
+	"arrows": [],
 	"speed": 1,
 	"ticks": 0
 };
@@ -120,31 +123,30 @@ function initialize() {
     stage.addChild(player);
     
     // arrows
-    arrows = [nextArrow()];
-    stage.addChild(arrows[0].sprite);
+    game.arrows = [nextArrow()];
+    stage.addChild(game.arrows[0].sprite);
     
     // animate
     requestAnimFrame(animate);
     function animate() {
 	// handle user input
 	if(mouseDown || keysPressed.indexOf(32) > -1) {
-	    if(game.player.y == getGroundHeight()) {
+	    if(game.player.position.y == getGroundHeight()) {
 		game.player.speed.y = 3.5;
 	    }
 	}
 	
 	// update arrows
-	if(arrows[arrows.length-1].sprite.position.x <= renderer.width) {
-	    arrows.push(nextArrow());
-	    stage.addChild(arrows[arrows.length-1].sprite);
+	if(game.arrows[game.arrows.length-1].sprite.position.x <= renderer.width) {
+	    game.arrows.push(nextArrow());
+	    stage.addChild(game.arrows[game.arrows.length-1].sprite);
 	}
-	if(arrows[0].sprite.position.x <= -renderer.width) {
-	    arrows.slice(0, 1);
+	if(game.arrows[0].sprite.position.x <= -renderer.width) {
+	    game.arrows.slice(0, 1);
 	}
-	for( var i = 0; i < arrows.length; i++) {
-	    if(Math.abs(game.player.x - arrows[i].x) < 100 && Math.abs(game.player.y - arrows[i].y) < 100) {
-		console.log(arrows[i].type);
-		if(arrows[i].type == "vertical") {
+	for(var i = 0; i < game.arrows.length; i++) {
+	    if(Math.abs(game.player.position.x - game.arrows[i].position.x) < 100 && Math.abs(game.player.position.y - game.arrows[i].position.y) < 100) {
+		if(game.arrows[i].type == "vertical") {
 			// jump
 			game.player.speed.y = 2.6;
 		}
@@ -161,30 +163,30 @@ function initialize() {
 	}
 	game.player.speed.x += (1 - game.player.speed.x) / 300; 
 	game.player.speed.y -= game.speed/40; 
-	game.player.x += game.player.speed.x * game.speed;
-	game.player.y += game.player.speed.y * game.speed;
-	if(game.player.y <= getGroundHeight()) {
+	game.player.position.x += game.player.speed.x * game.speed;
+	game.player.position.y += game.player.speed.y * game.speed;
+	if(game.player.position.y <= getGroundHeight()) {
 	    game.player.speed.y = 0;
-	    game.player.y = getGroundHeight();
+	    game.player.position.y = getGroundHeight();
 	}
 	
 	// reposition player
 	player.position.x = 200;
-	player.position.y = 475 - game.player.y;
+	player.position.y = 475 - game.player.position.y;
 	player.animationSpeed = game.player.speed.x * game.speed / 15;
 	
 	// reposition arrows
-	for(var i = 0; i < arrows.length; i++) {
-		arrows[i].sprite.animationSpeed = 2*player.animationSpeed;
-		arrows[i].sprite.position.x = player.position.x - game.player.x + arrows[i].x;
-		arrows[i].sprite.position.y = player.position.y + game.player.y - arrows[i].y;
+	for(var i = 0; i < game.arrows.length; i++) {
+		game.arrows[i].sprite.animationSpeed = 2*player.animationSpeed;
+		game.arrows[i].sprite.position.x = player.position.x - game.player.position.x + game.arrows[i].position.x;
+		game.arrows[i].sprite.position.y = player.position.y + game.player.position.y - game.arrows[i].position.y;
 	}
 	
 	// reposition background
-	backgroundFar2.tilePosition.x = game.player.x * -0.5;
-	backgroundFar.tilePosition.x = game.player.x * -0.85;
-	backgroundMid.tilePosition.x = game.player.x * -1.0;
-	backgroundFront.tilePosition.x = game.player.x * -1.15;
+	backgroundFar2.tilePosition.x = game.player.position.x * -0.5;
+	backgroundFar.tilePosition.x = game.player.position.x * -0.85;
+	backgroundMid.tilePosition.x = game.player.position.x * -1.0;
+	backgroundFront.tilePosition.x = game.player.position.x * -1.15;
 	
 	// render
 	renderer.render(stage);
@@ -246,8 +248,10 @@ function nextArrow() {
     return {
 	"sprite": arrow,
 	"type": type,
-	"x": game.player.x + 1000,
-	"y": 150
+	"position": {
+	    "x": game.player.position.x + 1000,
+	    "y": 150
+	}
     };
 }
 
