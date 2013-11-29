@@ -133,6 +133,28 @@ function initialize() {
 	    }
 	}
 	
+	// update arrows
+	if(arrows[arrows.length-1].sprite.position.x <= renderer.width) {
+	    arrows.push(nextArrow());
+	    stage.addChild(arrows[arrows.length-1].sprite);
+	}
+	if(arrows[0].sprite.position.x <= -renderer.width) {
+	    arrows.slice(0, 1);
+	}
+	for( var i = 0; i < arrows.length; i++) {
+	    if(Math.abs(game.player.x - arrows[i].x) < 100 && Math.abs(game.player.y - arrows[i].y) < 100) {
+		console.log(arrows[i].type);
+		if(arrows[i].type == "vertical") {
+			// jump
+			game.player.speed.y = 2.6;
+		}
+		else {
+			// run
+			game.player.speed.x = 2.6;
+		}
+	    }
+	}
+	
 	// update player position
 	if(game.ticks % 1000 == 0) {
 	    game.speed *= 1.1;
@@ -156,13 +178,6 @@ function initialize() {
 		arrows[i].sprite.animationSpeed = 2*player.animationSpeed;
 		arrows[i].sprite.position.x = player.position.x - game.player.x + arrows[i].x;
 		arrows[i].sprite.position.y = player.position.y + game.player.y - arrows[i].y;
-	}
-	if(arrows[arrows.length-1].sprite.position.x <= renderer.width) {
-	    arrows.push(nextArrow());
-	    stage.addChild(arrows[arrows.length-1].sprite);
-	}
-	if(arrows[0].sprite.position.x <= -renderer.width) {
-	    arrows.slice(0, 1);
 	}
 	
 	// reposition background
@@ -216,10 +231,11 @@ function createTilingSprite(path) {
  * "sprite"
  */
 function nextArrow() {
+    type = game.ticks % 2 == 0 ? "vertical" : "horizontal";
     // create arrow
     var arrowTextures = [];
     for(var i = 1; i <= 9; i++) {
-	arrowTextures.push(PIXI.Texture.fromFrame("arrow"+i+".png"));
+	arrowTextures.push(PIXI.Texture.fromFrame("arrow"+(type == "horizontal" ? "h" : "")+i+".png"));
     }
     var arrow = new PIXI.MovieClip(arrowTextures);
     arrow.gotoAndPlay(0);
@@ -229,6 +245,7 @@ function nextArrow() {
     // create return value
     return {
 	"sprite": arrow,
+	"type": type,
 	"x": game.player.x + 1000,
 	"y": 150
     };

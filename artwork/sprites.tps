@@ -36,7 +36,7 @@
         <key>dataFormat</key>
         <string>json</string>
         <key>textureFileName</key>
-        <filename>../htdocs/img/player.png</filename>
+        <filename>../htdocs/img/sprites.png</filename>
         <key>flipPVR</key>
         <false/>
         <key>ditherType</key>
@@ -127,7 +127,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../htdocs/img/player.json</filename>
+                <filename>../htdocs/img/sprites.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -160,7 +160,7 @@
             <key>trimThreshold</key>
             <uint>1</uint>
             <key>trimMode</key>
-            <enum type="SpriteSettings::TrimMode">Trim</enum>
+            <enum type="SpriteSettings::TrimMode">None</enum>
             <key>heuristicMask</key>
             <false/>
         </struct>
@@ -171,6 +171,15 @@
             <filename>player_run2b.png</filename>
             <filename>player_run2f.png</filename>
             <filename>player_stand.png</filename>
+            <filename>arrow9.png</filename>
+            <filename>arrow1.png</filename>
+            <filename>arrow2.png</filename>
+            <filename>arrow3.png</filename>
+            <filename>arrow4.png</filename>
+            <filename>arrow5.png</filename>
+            <filename>arrow6.png</filename>
+            <filename>arrow7.png</filename>
+            <filename>arrow8.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
