@@ -119,6 +119,8 @@ function initialize() {
     // animate
     requestAnimFrame(animate);
     function animate() {
+	game.player.speed = keysPressed.indexOf(32) > -1 ? 3 : 1;
+	
 	// update positions
 	if(game.ticks % 1000 == 0) {
 	    game.speed *= 1.1;
@@ -166,3 +168,23 @@ function createTilingSprite(path) {
     // return
     return sprite;
 }
+
+// user input
+var keysPressed = [];
+var mouseDown = false;
+
+// handle user input
+document.onkeydown = function(event) {
+    keysPressed.push(event.keyCode);
+};
+document.onkeyup = function(event) {
+    while(-1 < keysPressed.indexOf(event.keyCode)) {
+	keysPressed.splice(keysPressed.indexOf(event.keyCode), 1);
+    }
+};
+document.onmousedown = function() {
+    mouseDown = true;
+};
+document.onmouseup = function() {
+    mouseDown = false;
+};
