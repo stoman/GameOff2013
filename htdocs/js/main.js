@@ -1,4 +1,13 @@
 var test;
+var game = {
+	"player": {
+	    "x": 0,
+	    "y": 0,
+	    "speed": 1
+	},
+	"speed": 1,
+	"ticks": 0
+};
 
 $(window).load(function() {
     // load assets
@@ -20,7 +29,6 @@ $(window).load(function() {
 	console.log("loading... "+Math.round(100*++loadCount/5)+"%");
     });
     loader.load();
-    test = loader;
     console.log("loading...");
 });
 
@@ -35,55 +43,23 @@ function initialize() {
     var stage = new PIXI.Stage(0x66FF99);
     
     // far background 2
-    var backgroundFar2Texture = PIXI.Texture.fromImage("img/github_game_off_2013_resized.png");
-    var backgroundFar2 = new PIXI.TilingSprite(
-	    backgroundFar2Texture,
-	    2048,
-	    512
-    );
-    backgroundFar2.position.x = 0;
+    var backgroundFar2 = test = createTilingSprite("img/github_game_off_2013_resized.png");
     backgroundFar2.position.y = -150;
-    backgroundFar2.tilePosition.x = 0;
-    backgroundFar2.tilePosition.y = 0;
     stage.addChild(backgroundFar2);
 
     // far background 
-    var backgroundFarTexture = PIXI.Texture.fromImage("img/background_far.png");
-    var backgroundFar = new PIXI.TilingSprite(
-	    backgroundFarTexture,
-	    4*1024,
-	    4*128
-    );
-    backgroundFar.position.x = 0;
-    backgroundFar.position.y = canvas.height() - 4*128;
-    backgroundFar.tilePosition.x = 0;
-    backgroundFar.tilePosition.y = 0;
+    var backgroundFar = createTilingSprite("img/background_far.png");
+    backgroundFar.position.y = canvas.height() - backgroundFar.height;
     stage.addChild(backgroundFar);
     
     // mid background
-    var backgroundMidTexture = PIXI.Texture.fromImage("img/background_mid.png");
-    var backgroundMid = new PIXI.TilingSprite(
-	    backgroundMidTexture,
-	    4*1024,
-	    4*128
-    );
-    backgroundMid.position.x = 0;
-    backgroundMid.position.y = canvas.height() - 4*128;
-    backgroundMid.tilePosition.x = 0;
-    backgroundMid.tilePosition.y = 0;
+    var backgroundMid = createTilingSprite("img/background_mid.png");
+    backgroundMid.position.y = canvas.height() - backgroundMid.height;
     stage.addChild(backgroundMid);
 
     // front background
-    var backgroundFrontTexture = PIXI.Texture.fromImage("img/background_front.png");
-    var backgroundFront = new PIXI.TilingSprite(
-	    backgroundFrontTexture,
-	    4*1024,
-	    4*128
-    );
-    backgroundFront.position.x = 0;
-    backgroundFront.position.y = canvas.height() - 4*128;
-    backgroundFront.tilePosition.x = 0;
-    backgroundFront.tilePosition.y = 0;
+    var backgroundFront = createTilingSprite("img/background_front.png");
+    backgroundFront.position.y = canvas.height() - backgroundFront.height;
     stage.addChild(backgroundFront);
 
     // character
@@ -109,4 +85,25 @@ function initialize() {
 	renderer.render(stage);
 	requestAnimFrame(animate);
     }
+}
+
+/**
+ * This function loads a TilingSprite from a given path. The image should be
+ * preloaded by the asset loader in advance.
+ * @param path is the path to the texture image
+ * @returns a new PIXI.TilingSprite
+ */
+function createTilingSprite(path) {
+    // load texture
+    var texture = PIXI.Texture.fromImage(path);
+    
+    // create sprite
+    var sprite = new PIXI.TilingSprite(
+	    texture,
+	    texture.width,
+	    texture.height
+    );
+        
+    // return
+    return sprite;
 }
