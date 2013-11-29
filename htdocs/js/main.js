@@ -11,10 +11,20 @@ var game = {
 		"x": 1,
 		"y": 0
 	    },
+	    "isJumping": false,
 	    "sprite": null
 	},
 	"arrows": [],
 	"waiter": {
+	    "position": {
+		"x": -170,
+		"y": 0
+	    },
+	    "speed": {
+		"x": 1,
+		"y": 0
+	    },
+	    "isJumping": false,
 	    "sprite": null
 	},
 	"speed": 2,
@@ -155,11 +165,15 @@ function initialize() {
     requestAnimFrame(animate);
     function animate() {
 	// handle user input
-	if(mouseDown || keysPressed.indexOf(32) > -1) {
-	    if(game.player.position.y == getGroundHeight()) {
-		game.player.speed.y = 3.5;
-	    }
-	}
+	game.player.isJumping = mouseDown || keysPressed.indexOf(32) > -1;
+	game.waiter.isJumping = game.ticks % 300 == 0;
+	[game.player, game.waiter].forEach(function(agent) {
+        	if(agent.isJumping) {
+        	    if(agent.position.y == getGroundHeight(agent.position.x)) {
+        		agent.speed.y = 3.5;
+        	    }
+        	}
+	});
 	
 	// update arrows
 	if(game.arrows[game.arrows.length-1].sprite.position.x <= renderer.width) {
@@ -186,23 +200,23 @@ function initialize() {
 	if(game.ticks % 1000 == 0) {
 	    game.speed *= 1.1;
 	}
-	game.player.speed.x += (1 - game.player.speed.x) / 300; 
-	game.player.speed.y -= game.speed/40; 
-	game.player.position.x += game.player.speed.x * game.speed;
-	game.player.position.y += game.player.speed.y * game.speed;
-	if(game.player.position.y <= getGroundHeight()) {
-	    game.player.speed.y = 0;
-	    game.player.position.y = getGroundHeight();
-	}
+	game.waiter.speed.x = game.player.speed.x;
+	[game.player, game.waiter].forEach(function(agent) {
+		agent.speed.x += (1 - agent.speed.x) / 300; 
+		agent.speed.y -= game.speed/40; 
+		agent.position.x += agent.speed.x * game.speed;
+		agent.position.y += agent.speed.y * game.speed;
+		if(agent.position.y <= getGroundHeight(agent.position.x)) {
+		    agent.speed.y = 0;
+		    agent.position.y = getGroundHeight(agent.position.x);
+		}
 	
-	// reposition player
-	game.player.sprite.position.x = 200;
-	game.player.sprite.position.y = 475 - game.player.position.y;
-	game.player.sprite.animationSpeed = game.player.speed.x * game.speed / 15;
-	game.waiter.sprite.position.x = 30;
-	game.waiter.sprite.position.y = 475;
-	game.waiter.sprite.animationSpeed = game.player.sprite.animationSpeed;
-	
+		// reposition agents
+		agent.sprite.position.x = 200 + agent.position.x - game.player.position.x;
+		agent.sprite.position.y = 475 - agent.position.y;
+		agent.sprite.animationSpeed = agent.speed.x * game.speed / 15;
+	});
+		
 	// reposition arrows
 	for(var i = 0; i < game.arrows.length; i++) {
 		game.arrows[i].sprite.animationSpeed = game.speed / 10;
@@ -228,9 +242,10 @@ function initialize() {
 /**
  * This function returns the height of the ground at the player's current
  * position.
+ * @param x is the x-coordinate of the position to ask for
  * @returns the height at the player's current position
  */
-function getGroundHeight() {
+function getGroundHeight(x) {
     return 0;//TODO
 }
 
