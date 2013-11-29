@@ -30,7 +30,7 @@ $(document).ready(function() {
     	"img/pixi.js.png",
 
     	// sprites
-    	"img/player.json"
+    	"img/sprites.json"
     ]);
     loader.addEventListener("onComplete", function(event) {
 	// finished -> start game
@@ -119,13 +119,26 @@ function initialize() {
     player.anchor.y = 1;
     stage.addChild(player);
     
+    // arrow
+    var arrowTextures = [];
+    for(var i = 1; i <= 9; i++) {
+	arrowTextures.push(PIXI.Texture.fromFrame("arrow"+i+".png"));
+    }
+    var arrow = new PIXI.MovieClip(arrowTextures);
+    arrow.gotoAndPlay(0);
+    arrow.anchor.x = 0.5;
+    arrow.anchor.y = 1;
+    arrow.position.x = 300;
+    arrow.position.y = 300;
+    stage.addChild(arrow);
+    
     // animate
     requestAnimFrame(animate);
     function animate() {
 	// handle user input
 	if(mouseDown || keysPressed.indexOf(32) > -1) {
 	    if(game.player.y == getGroundHeight()) {
-		game.player.speed.y = 5;
+		game.player.speed.y = 3.5;
 	    }
 	}
 	
@@ -134,7 +147,7 @@ function initialize() {
 	    game.speed *= 1.1;
 	}
 	game.player.speed.x += (1 - game.player.speed.x) / 300; 
-	game.player.speed.y -= game.speed/20; 
+	game.player.speed.y -= game.speed/40; 
 	game.player.x += game.player.speed.x * game.speed;
 	game.player.y += game.player.speed.y * game.speed;
 	if(game.player.y <= getGroundHeight()) {
@@ -146,6 +159,7 @@ function initialize() {
 	player.position.x = 200;
 	player.position.y = 475 - game.player.y;
 	player.animationSpeed = game.player.speed.x * game.speed / 15;
+	arrow.animationSpeed = 2*player.animationSpeed;
 	
 	// reposition background
 	backgroundFar2.tilePosition.x = game.player.x * -0.5;
