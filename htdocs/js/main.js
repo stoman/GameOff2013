@@ -119,18 +119,9 @@ function initialize() {
     player.anchor.y = 1;
     stage.addChild(player);
     
-    // arrow
-    var arrowTextures = [];
-    for(var i = 1; i <= 9; i++) {
-	arrowTextures.push(PIXI.Texture.fromFrame("arrow"+i+".png"));
-    }
-    var arrow = new PIXI.MovieClip(arrowTextures);
-    arrow.gotoAndPlay(0);
-    arrow.anchor.x = 0.5;
-    arrow.anchor.y = 1;
-    arrow.position.x = 300;
-    arrow.position.y = 300;
-    stage.addChild(arrow);
+    // arrows
+    arrows = [nextArrow()];
+    stage.addChild(arrows[0].sprite);
     
     // animate
     requestAnimFrame(animate);
@@ -142,7 +133,7 @@ function initialize() {
 	    }
 	}
 	
-	// update positions
+	// update player position
 	if(game.ticks % 1000 == 0) {
 	    game.speed *= 1.1;
 	}
@@ -159,7 +150,20 @@ function initialize() {
 	player.position.x = 200;
 	player.position.y = 475 - game.player.y;
 	player.animationSpeed = game.player.speed.x * game.speed / 15;
-	arrow.animationSpeed = 2*player.animationSpeed;
+	
+	// reposition arrows
+	for(var i = 0; i < arrows.length; i++) {
+		arrows[i].sprite.animationSpeed = 2*player.animationSpeed;
+		arrows[i].sprite.position.x = player.position.x - game.player.x + arrows[i].x;
+		arrows[i].sprite.position.y = player.position.y + game.player.y - arrows[i].y;
+	}
+	if(arrows[arrows.length-1].sprite.position.x <= renderer.width) {
+	    arrows.push(nextArrow());
+	    stage.addChild(arrows[arrows.length-1].sprite);
+	}
+	if(arrows[0].sprite.position.x <= -renderer.width) {
+	    arrows.slice(0, 1);
+	}
 	
 	// reposition background
 	backgroundFar2.tilePosition.x = game.player.x * -0.5;
@@ -204,6 +208,30 @@ function createTilingSprite(path) {
         
     // return
     return sprite;
+}
+
+/**
+ * This function computes the next arrow to show to the user.
+ * @returns an object describing the arrow, the sprite is contained in the key
+ * "sprite"
+ */
+function nextArrow() {
+    // create arrow
+    var arrowTextures = [];
+    for(var i = 1; i <= 9; i++) {
+	arrowTextures.push(PIXI.Texture.fromFrame("arrow"+i+".png"));
+    }
+    var arrow = new PIXI.MovieClip(arrowTextures);
+    arrow.gotoAndPlay(0);
+    arrow.anchor.x = 0.5;
+    arrow.anchor.y = 1;
+    
+    // create return value
+    return {
+	"sprite": arrow,
+	"x": game.player.x + 1000,
+	"y": 150
+    };
 }
 
 // user input
