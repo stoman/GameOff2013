@@ -5,7 +5,10 @@ var game = {
 	"player": {
 	    "x": 0,
 	    "y": 0,
-	    "speed": 1
+	    "speed": {
+		"x": 1,
+		"y": 0
+	    }
 	},
 	"speed": 1,
 	"ticks": 0
@@ -119,19 +122,30 @@ function initialize() {
     // animate
     requestAnimFrame(animate);
     function animate() {
-	game.player.speed = keysPressed.indexOf(32) > -1 ? 3 : 1;
+	// handle user input
+	if(mouseDown || keysPressed.indexOf(32) > -1) {
+	    if(game.player.y == getGroundHeight()) {
+		game.player.speed.y = 5;
+	    }
+	}
 	
 	// update positions
 	if(game.ticks % 1000 == 0) {
 	    game.speed *= 1.1;
 	}
-	game.player.speed += (1 - game.player.speed) / 300; 
-	game.player.x += game.player.speed * game.speed;
+	game.player.speed.x += (1 - game.player.speed.x) / 300; 
+	game.player.speed.y -= game.speed/20; 
+	game.player.x += game.player.speed.x * game.speed;
+	game.player.y += game.player.speed.y * game.speed;
+	if(game.player.y <= getGroundHeight()) {
+	    game.player.speed.y = 0;
+	    game.player.y = getGroundHeight();
+	}
 	
 	// reposition player
-	player.position.x = 100;
+	player.position.x = 200;
 	player.position.y = 475 - game.player.y;
-	player.animationSpeed = game.player.speed * game.speed / 15;
+	player.animationSpeed = game.player.speed.x * game.speed / 15;
 	
 	// reposition background
 	backgroundFar2.tilePosition.x = game.player.x * -0.5;
@@ -146,6 +160,15 @@ function initialize() {
 	requestAnimFrame(animate);
 	game.ticks++;
     }
+}
+
+/**
+ * This function returns the height of the ground at the player's current
+ * position.
+ * @returns the height at the player's current position
+ */
+function getGroundHeight() {
+    return 0;//TODO
 }
 
 /**
@@ -176,11 +199,13 @@ var mouseDown = false;
 // handle user input
 document.onkeydown = function(event) {
     keysPressed.push(event.keyCode);
+    return event.keyCode != 32;
 };
 document.onkeyup = function(event) {
     while(-1 < keysPressed.indexOf(event.keyCode)) {
 	keysPressed.splice(keysPressed.indexOf(event.keyCode), 1);
     }
+    return event.keyCode != 32;
 };
 document.onmousedown = function() {
     mouseDown = true;
