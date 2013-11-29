@@ -10,9 +10,13 @@ var game = {
 	    "speed": {
 		"x": 1,
 		"y": 0
-	    }
+	    },
+	    "sprite": null
 	},
 	"arrows": [],
+	"waiter": {
+	    "sprite": null
+	},
 	"speed": 2,
 	"ticks": 0
 };
@@ -116,11 +120,32 @@ function initialize() {
     for(var i = 0; i < playerFrames.length; i++) {
 	playerTextures.push(PIXI.Texture.fromFrame(playerFrames[i]));
     }
-    var player = new PIXI.MovieClip(playerTextures);
-    player.gotoAndPlay(0);
-    player.anchor.x = 0.5;
-    player.anchor.y = 1;
-    stage.addChild(player);
+    game.player.sprite = new PIXI.MovieClip(playerTextures);
+    game.player.sprite.gotoAndPlay(0);
+    game.player.sprite.anchor.x = 0.5;
+    game.player.sprite.anchor.y = 1;
+    stage.addChild(game.player.sprite);
+    
+    // waiter
+    var waiterFrames = [
+    	"waiter_stand.png",
+    	"waiter_run1f.png",
+    	"waiter_run2f.png",
+    	"waiter_run1f.png",
+    	"waiter_stand.png",
+    	"waiter_run1b.png",
+    	"waiter_run2b.png",
+    	"waiter_run1b.png"
+    ];
+    var waiterTextures = [];
+    for(var i = 0; i < waiterFrames.length; i++) {
+	waiterTextures.push(PIXI.Texture.fromFrame(waiterFrames[i]));
+    }
+    game.waiter.sprite = new PIXI.MovieClip(waiterTextures);
+    game.waiter.sprite.gotoAndPlay(0);
+    game.waiter.sprite.anchor.x = 0.5;
+    game.waiter.sprite.anchor.y = 1;
+    stage.addChild(game.waiter.sprite);
     
     // arrows
     game.arrows = [nextArrow()];
@@ -171,15 +196,18 @@ function initialize() {
 	}
 	
 	// reposition player
-	player.position.x = 200;
-	player.position.y = 475 - game.player.position.y;
-	player.animationSpeed = game.player.speed.x * game.speed / 15;
+	game.player.sprite.position.x = 200;
+	game.player.sprite.position.y = 475 - game.player.position.y;
+	game.player.sprite.animationSpeed = game.player.speed.x * game.speed / 15;
+	game.waiter.sprite.position.x = 30;
+	game.waiter.sprite.position.y = 475;
+	game.waiter.sprite.animationSpeed = game.player.sprite.animationSpeed;
 	
 	// reposition arrows
 	for(var i = 0; i < game.arrows.length; i++) {
 		game.arrows[i].sprite.animationSpeed = game.speed / 10;
-		game.arrows[i].sprite.position.x = player.position.x - game.player.position.x + game.arrows[i].position.x;
-		game.arrows[i].sprite.position.y = player.position.y + game.player.position.y - game.arrows[i].position.y;
+		game.arrows[i].sprite.position.x = game.player.sprite.position.x - game.player.position.x + game.arrows[i].position.x;
+		game.arrows[i].sprite.position.y = game.player.sprite.position.y + game.player.position.y - game.arrows[i].position.y;
 	}
 	
 	// reposition background
