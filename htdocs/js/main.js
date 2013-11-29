@@ -1,4 +1,30 @@
+var test;
+
 $(window).load(function() {
+    // load assets
+    var loader = new PIXI.AssetLoader([
+       	"img/github_game_off_2013_resized.png",
+    	"img/github_game_off_2013.png",
+	"img/background_far.png",
+	"img/background_mid.png",
+	"img/background_front.png"
+    ]);
+    loader.addEventListener("onComplete", function(event) {
+	// finished -> start game
+	console.log("ready");
+	initialize();
+    });
+    var loadCount = 0;
+    loader.addEventListener("onProgress", function(event) {
+	// loading progress
+	console.log("loading... "+Math.round(100*++loadCount/5)+"%");
+    });
+    loader.load();
+    test = loader;
+    console.log("loading...");
+});
+
+function initialize() {    
     // setup renderer and stage
     var canvas = $("#game-canvas");
     var renderer = new PIXI.autoDetectRenderer(
@@ -83,4 +109,4 @@ $(window).load(function() {
 	renderer.render(stage);
 	requestAnimFrame(animate);
     }
-});
+}
