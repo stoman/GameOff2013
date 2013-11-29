@@ -98,8 +98,8 @@ function initialize() {
     function animate() {
 	// update positions
 	game.ticks++;
-	if(game.ticks % 200 == 0) {
-	    game.player.speed *= 1.1;
+	if(game.ticks % 1000 == 0) {
+	    game.speed *= 1.1;
 	}
 	game.player.speed += (1-game.player.speed)/300; 
 	game.player.x += game.player.speed * game.speed;
@@ -110,9 +110,9 @@ function initialize() {
 
 	// reposition background
 	backgroundFar2.tilePosition.x = game.player.x * -0.5;
-	backgroundFar.tilePosition.x = game.player.x * -0.75;
+	backgroundFar.tilePosition.x = game.player.x * -0.85;
 	backgroundMid.tilePosition.x = game.player.x * -1.0;
-	backgroundFront.tilePosition.x = game.player.x * -1.25;
+	backgroundFront.tilePosition.x = game.player.x * -1.15;
 	
 	// render
 	renderer.render(stage);
