@@ -65,8 +65,6 @@ function initialize() {
     // character
     var characterTexture = PIXI.Texture.fromImage("img/test.png");
     var character = new PIXI.Sprite(characterTexture);
-    character.position.x = 100;
-    character.position.y = 475;
     character.anchor.x = 0.5;
     character.anchor.y = 1;
     stage.addChild(character);
@@ -75,11 +73,22 @@ function initialize() {
     requestAnimFrame(animate);
     function animate() {
 	// update positions
-	//character.rotation += 0.01;
-	backgroundFar2.tilePosition.x -= 0.9;
-	backgroundFar.tilePosition.x -= 1.2;
-	backgroundMid.tilePosition.x -= 1.8;
-	backgroundFront.tilePosition.x -= 2.7;
+	game.ticks++;
+	if(game.ticks % 200 == 0) {
+	    game.player.speed *= 1.1;
+	}
+	game.player.speed += (1-game.player.speed)/300; 
+	game.player.x += game.player.speed * game.speed;
+	
+	// reposition player
+	character.position.x = 100;
+	character.position.y = 475 - game.player.y;
+
+	// reposition background
+	backgroundFar2.tilePosition.x = game.player.x * -0.5;
+	backgroundFar.tilePosition.x = game.player.x * -0.75;
+	backgroundMid.tilePosition.x = game.player.x * -1.0;
+	backgroundFront.tilePosition.x = game.player.x * -1.25;
 	
 	// render
 	renderer.render(stage);
