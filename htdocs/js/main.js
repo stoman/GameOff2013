@@ -11,32 +11,55 @@ var game = {
 	"ticks": 0
 };
 
+// player sprite frames
+var playerFrames = [
+	"player_stand.png",
+	"player_run1f.png",
+	"player_run2f.png",
+	"player_run1f.png",
+	"player_stand.png",
+	"player_run1b.png",
+	"player_run2b.png",
+	"player_run1b.png"
+];
+var playerTextures = [];
+
+
 // preloader
 $(document).ready(function() {
     // load assets
     var loader = test = new PIXI.AssetLoader([
+        // background
        	"img/github_game_off_2013_resized.png",
-    	"img/github_game_off_2013.png",
 	"img/background_far.png",
 	"img/background_mid.png",
-	"img/background_front.png"
+	"img/background_front.png",
+	
+	// splash screens
+    	"img/github_game_off_2013.png",
+    	"img/jquery.png",
+    	"img/pixi.js.png",
+
+    	// sprites
+    	"img/player.json"
     ]);
     loader.addEventListener("onComplete", function(event) {
 	// finished -> start game
 	initialize();
-	$("#loading").fadeOut(2000, function() {
-	    $("#splash1").fadeIn(2000, function() {
+	var time = 0;//final: 2000;
+	$("#loading").fadeOut(time, function() {
+	    $("#splash1").fadeIn(time, function() {
 		setTimeout(function() {
-		    $("#splash1").fadeOut(2000, function() {
-			    $("#splash2").fadeIn(2000, function() {
+		    $("#splash1").fadeOut(time, function() {
+			    $("#splash2").fadeIn(time, function() {
 				setTimeout(function() {
-				    $("#splash2").fadeOut(2000, function() {
-					$("#game-canvas").fadeIn(2000);
+				    $("#splash2").fadeOut(time, function() {
+					$("#game-canvas").fadeIn(time);
 				    });
-				}, 3000);
+				}, 1.5*time);
 			    });
 		    });
-		}, 3000);
+		}, time);
 	    });
 	});
     });
@@ -86,28 +109,31 @@ function initialize() {
     backgroundFront.position.y = canvas.height() - backgroundFront.height;
     stage.addChild(backgroundFront);
 
-    // character
-    var characterTexture = PIXI.Texture.fromImage("img/test.png");
-    var character = new PIXI.Sprite(characterTexture);
-    character.anchor.x = 0.5;
-    character.anchor.y = 1;
-    stage.addChild(character);
+    // player
+    for(var i = 0; i < playerFrames.length; i++) {
+	playerTextures[i] = PIXI.Texture.fromFrame(playerFrames[i]);
+    }
+    var player = new PIXI.MovieClip(playerTextures);
+    player.gotoAndPlay(0);
+    player.anchor.x = 0.5;
+    player.anchor.y = 1;
+    stage.addChild(player);
     
     // animate
     requestAnimFrame(animate);
     function animate() {
 	// update positions
-	game.ticks++;
 	if(game.ticks % 1000 == 0) {
 	    game.speed *= 1.1;
 	}
-	game.player.speed += (1-game.player.speed)/300; 
+	game.player.speed += (1 - game.player.speed) / 300; 
 	game.player.x += game.player.speed * game.speed;
 	
 	// reposition player
-	character.position.x = 100;
-	character.position.y = 475 - game.player.y;
-
+	player.position.x = 100;
+	player.position.y = 475 - game.player.y;
+    player.animationSpeed = game.player.speed * game.speed / 10;
+	
 	// reposition background
 	backgroundFar2.tilePosition.x = game.player.x * -0.5;
 	backgroundFar.tilePosition.x = game.player.x * -0.85;
@@ -116,7 +142,10 @@ function initialize() {
 	
 	// render
 	renderer.render(stage);
+	
+	// go to next tick
 	requestAnimFrame(animate);
+	game.ticks++;
     }
 }
 
