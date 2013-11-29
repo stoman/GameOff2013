@@ -11,20 +11,6 @@ var game = {
 	"ticks": 0
 };
 
-// player sprite frames
-var playerFrames = [
-	"player_stand.png",
-	"player_run1f.png",
-	"player_run2f.png",
-	"player_run1f.png",
-	"player_stand.png",
-	"player_run1b.png",
-	"player_run2b.png",
-	"player_run1b.png"
-];
-var playerTextures = [];
-
-
 // preloader
 $(document).ready(function() {
     // load assets
@@ -110,8 +96,19 @@ function initialize() {
     stage.addChild(backgroundFront);
 
     // player
+    var playerFrames = [
+    	"player_stand.png",
+    	"player_run1f.png",
+    	"player_run2f.png",
+    	"player_run1f.png",
+    	"player_stand.png",
+    	"player_run1b.png",
+    	"player_run2b.png",
+    	"player_run1b.png"
+    ];
+    var playerTextures = [];
     for(var i = 0; i < playerFrames.length; i++) {
-	playerTextures[i] = PIXI.Texture.fromFrame(playerFrames[i]);
+	playerTextures.push(PIXI.Texture.fromFrame(playerFrames[i]));
     }
     var player = new PIXI.MovieClip(playerTextures);
     player.gotoAndPlay(0);
@@ -132,7 +129,7 @@ function initialize() {
 	// reposition player
 	player.position.x = 100;
 	player.position.y = 475 - game.player.y;
-    player.animationSpeed = game.player.speed * game.speed / 10;
+	player.animationSpeed = game.player.speed * game.speed / 15;
 	
 	// reposition background
 	backgroundFar2.tilePosition.x = game.player.x * -0.5;
