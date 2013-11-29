@@ -13,7 +13,7 @@ var game = {
 	    }
 	},
 	"arrows": [],
-	"speed": 1,
+	"speed": 2,
 	"ticks": 0
 };
 
@@ -152,7 +152,7 @@ function initialize() {
 		}
 		else {
 			// run
-			game.player.speed.x = 2.6;
+			game.player.speed.x = 2;
 		}
 	    }
 	}
@@ -177,7 +177,7 @@ function initialize() {
 	
 	// reposition arrows
 	for(var i = 0; i < game.arrows.length; i++) {
-		game.arrows[i].sprite.animationSpeed = 2*player.animationSpeed;
+		game.arrows[i].sprite.animationSpeed = game.speed / 10;
 		game.arrows[i].sprite.position.x = player.position.x - game.player.position.x + game.arrows[i].position.x;
 		game.arrows[i].sprite.position.y = player.position.y + game.player.position.y - game.arrows[i].position.y;
 	}
