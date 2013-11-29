@@ -14,7 +14,7 @@ var game = {
 // preloader
 $(window).load(function() {
     // load assets
-    var loader = new PIXI.AssetLoader([
+    var loader = test = new PIXI.AssetLoader([
        	"img/github_game_off_2013_resized.png",
     	"img/github_game_off_2013.png",
 	"img/background_far.png",
@@ -23,16 +23,21 @@ $(window).load(function() {
     ]);
     loader.addEventListener("onComplete", function(event) {
 	// finished -> start game
-	console.log("ready");
 	initialize();
+	$("#loading").fadeOut(2000, function() {
+	    $("#game-canvas").fadeIn(2000);
+	});
     });
     var loadCount = 0;
     loader.addEventListener("onProgress", function(event) {
 	// loading progress
-	console.log("loading... "+Math.round(100*++loadCount/5)+"%");
+	$("#loading p").html(
+		Math.round(100*++loadCount/loader.assetURLs.length)+"%"
+	);
     });
     loader.load();
-    console.log("loading...");
+    $("#js-error").hide();
+    $("#loading").show();
 });
 
 /**

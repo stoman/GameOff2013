@@ -1,13 +1,30 @@
+#main-container {
+	width: 700px;
+	margin: 0 auto;
+	position: relative;
+}
+
 #game-canvas {
 	height: 600px;
 	width: 700px;
 	position: absolute;
 	top: 0px;
 	left: 0px;
+	z-index: 2;
+	display: none;
 }
 
-#main-container {
+#loading, #js-error {
 	width: 700px;
-	margin: 0 auto;
-	position: relative;
+	position: absolute;
+	top: 150px;
+	left: 0px;
+	z-index: 3;
+	text-align: center;
+	font-size: xx-large;
+	font-weight: bold;
+}
+
+#loading {
+	display: none;
 }
