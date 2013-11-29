@@ -1,4 +1,6 @@
 var test;
+
+// game data
 var game = {
 	"player": {
 	    "x": 0,
@@ -9,6 +11,7 @@ var game = {
 	"ticks": 0
 };
 
+// preloader
 $(window).load(function() {
     // load assets
     var loader = new PIXI.AssetLoader([
@@ -32,6 +35,10 @@ $(window).load(function() {
     console.log("loading...");
 });
 
+/**
+ * This function runs the game. It creates the renderer, the stage, the sprites
+ * and so on.
+ */
 function initialize() {    
     // setup renderer and stage
     var canvas = $("#game-canvas");
@@ -43,7 +50,7 @@ function initialize() {
     var stage = new PIXI.Stage(0x66FF99);
     
     // far background 2
-    var backgroundFar2 = test = createTilingSprite("img/github_game_off_2013_resized.png");
+    var backgroundFar2 = createTilingSprite("img/github_game_off_2013_resized.png");
     backgroundFar2.position.y = -150;
     stage.addChild(backgroundFar2);
 
