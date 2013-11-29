@@ -19,7 +19,7 @@ body {
 	display: none;
 }
 
-#loading, #js-error {
+#loading, #js-error, #splash1, #splash2 {
 	width: 700px;
 	position: absolute;
 	top: 150px;
@@ -30,6 +30,16 @@ body {
 	font-weight: bold;
 }
 
-#loading {
+#loading, #splash1, #splash2 {
 	display: none;
+}
+
+#splash1 img {
+	max-width: 100%;
+}
+
+#splash2 img {
+	max-width: 30%;
+	max-height: 100px;
+	margin: 0 10px;
 }
