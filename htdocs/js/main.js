@@ -276,7 +276,14 @@ function createTilingSprite(path) {
  * "sprite"
  */
 function nextArrow() {
-    type = game.ticks % 2 == 0 ? "vertical" : "horizontal";
+    var x = game.arrows.length == 0 ? game.player.position.x + 700 : 
+	game.arrows[game.arrows.length-1].position.x
+    	+ 300 + pseudoRandom(
+    		todaySeed(),
+    		game.arrows[game.arrows.length-1].position.x + 1,
+    		1200
+    ); 
+    var type = x % 2 == 0 ? "vertical" : "horizontal";
     // create arrow
     var arrowTextures = [];
     for(var i = 1; i <= 9; i++) {
@@ -292,7 +299,7 @@ function nextArrow() {
 	"sprite": arrow,
 	"type": type,
 	"position": {
-	    "x": game.player.position.x + 1000,
+	    "x": x,
 	    "y": 150
 	}
     };
@@ -319,3 +326,30 @@ document.onmousedown = function() {
 document.onmouseup = function() {
     mouseDown = false;
 };
+
+/**
+ * This function generates deterministically a pseudo-random number between 0
+ * and max-1.
+ * @param seed is the seed to use
+ * @param nr is the number of the query. This can be used as a part of the seed
+ * @param max is the modulo
+ * @returns a pseudo-random number
+ */
+function pseudoRandom(seed, nr, max) {
+    return (
+    		2 * nr
+        	+ 7 * (Math.pow(seed, 1) % max) * nr
+        	+ 13 * (Math.pow(seed, 2) % max) * nr
+        	+ 5 * (Math.pow(seed, 3) % max) * nr
+    	) % max;
+}
+
+/**
+ * This function generates a seed for random generators that depends on the
+ * current date only by concatenating todays day, month and year.
+ * @returns a random seed
+ */
+function todaySeed() {
+    today = new Date();
+    return today.getDay() + 100 * today.getMonth() + 10000 * today.getYear();
+}
