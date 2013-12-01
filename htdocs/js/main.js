@@ -4,6 +4,10 @@ var renderer;
 var stage;
 var game;
 
+//user input
+var keysPressed = [];
+var mouseDown = false;
+
 // preloader
 $(document).ready(function() {
     // load assets
@@ -63,6 +67,30 @@ $(window).load(function() {
 	    canvas.height(),
 	    canvas[0]
     );
+    
+    // handle user input
+    document.onkeydown = function(event) {
+        keysPressed.push(event.keyCode);
+        return event.keyCode != 32;
+    };
+    document.onkeyup = function(event) {
+        while(-1 < keysPressed.indexOf(event.keyCode)) {
+    	keysPressed.splice(keysPressed.indexOf(event.keyCode), 1);
+        }
+        if(event.keyCode == 32 && (game == null || !game.running)) {
+    	initialize();
+        }
+        return event.keyCode != 32;
+    };
+    canvas[0].onmousedown = function() {
+        mouseDown = true;
+    };
+    canvas[0].onmouseup = function() {
+        mouseDown = false;
+        if(game == null || !game.running) {
+    	initialize();
+        }
+    };
 });
 
 /**
@@ -426,34 +454,6 @@ function nextWaiter() {
 	"doubleJumpAvailable": true
     };
 }
-
-// user input
-var keysPressed = [];
-var mouseDown = false;
-
-// handle user input
-document.onkeydown = function(event) {
-    keysPressed.push(event.keyCode);
-    return event.keyCode != 32;
-};
-document.onkeyup = function(event) {
-    while(-1 < keysPressed.indexOf(event.keyCode)) {
-	keysPressed.splice(keysPressed.indexOf(event.keyCode), 1);
-    }
-    if(event.keyCode == 32 && (game == null || !game.running)) {
-	initialize();
-    }
-    return event.keyCode != 32;
-};
-document.onmousedown = function() {
-    mouseDown = true;
-};
-document.onmouseup = function() {
-    mouseDown = false;
-    if(game == null || !game.running) {
-	initialize();
-    }
-};
 
 /**
  * This function generates deterministically a pseudo-random number between 0
