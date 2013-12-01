@@ -1,39 +1,8 @@
-var test;
-
-// game data
-var game = {
-	"player": {
-	    "position": {
-		"x": 0,
-		"y": 0
-	    },
-	    "speed": {
-		"x": 1,
-		"y": 0
-	    },
-	    "isJumping": false,
-	    "doubleJumpAvailable": true,
-	    "sprite": null
-	},
-	"arrows": [],
-	"waiters": [],
-	"followingWaiter": {
-	    "position": {
-		"x": -170,
-		"y": 0
-	    },
-	    "speed": {
-		"x": 1,
-		"y": 0
-	    },
-	    "isJumping": false,
-	"doubleJumpAvailable": true,
-	    "sprite": null
-	},
-	"speed": 2,
-	"ticks": 0,
-	"score": 0
-};
+// global variables
+var canvas;
+var renderer;
+var stage;
+var game;
 
 // preloader
 $(document).ready(function() {
@@ -84,20 +53,60 @@ $(document).ready(function() {
     $("#js-error").hide();
     $("#loading").show();
 });
+   
+$(window).load(function() {
+    // setup renderer and stage
+    canvas = $("#game-canvas");
+    renderer = new PIXI.autoDetectRenderer(
+	    canvas.width(),
+	    canvas.height(),
+	    canvas[0]
+    );
+});
 
 /**
  * This function runs the game. It creates the renderer, the stage, the sprites
  * and so on.
  */
-function initialize() {    
+function initialize() {
+    // game data
+    game = {
+    	"player": {
+    	    "position": {
+    		"x": 0,
+    		"y": 0
+    	    },
+    	    "speed": {
+    		"x": 1,
+    		"y": 0
+    	    },
+    	    "isJumping": false,
+    	    "doubleJumpAvailable": true,
+    	    "sprite": null
+    	},
+    	"arrows": [],
+    	"waiters": [],
+    	"followingWaiter": {
+    	    "position": {
+    		"x": -170,
+    		"y": 0
+    	    },
+    	    "speed": {
+    		"x": 1,
+    		"y": 0
+    	    },
+    	    "isJumping": false,
+    	"doubleJumpAvailable": true,
+    	    "sprite": null
+    	},
+    	"speed": 2,
+    	"ticks": 0,
+    	"score": 0,
+    	"running": false
+    };
+
     // setup renderer and stage
-    var canvas = $("#game-canvas");
-    var renderer = new PIXI.autoDetectRenderer(
-	    canvas.width(),
-	    canvas.height(),
-	    canvas[0]
-	    );
-    var stage = new PIXI.Stage(0x66FF99);
+    stage = new PIXI.Stage(0x66FF99);
     
     // far background 2
     var backgroundFar2 = createTilingSprite("img/github_game_off_2013_resized.png");
@@ -178,6 +187,8 @@ function initialize() {
     scoreText.position.x = 10;
     scoreText.position.y = 10;
     stage.addChild(scoreText);
+    
+    game.running = true;
 
     // animate
     requestAnimFrame(animate);
@@ -248,7 +259,7 @@ function initialize() {
 	// detect waiter collisions
 	for(var i = 0; i < game.waiters.length; i++) {
 	    if(Math.abs(game.player.position.x - game.waiters[i].position.x) < 50 && Math.abs(game.player.position.y - game.waiters[i].position.y) < 100) {
-		//TODO
+		game.running = false;
 	    }
 	}
 	
@@ -291,7 +302,9 @@ function initialize() {
 	renderer.render(stage);
 	
 	// go to next tick
-	requestAnimFrame(animate);
+	if(game.running) {
+	    requestAnimFrame(animate);
+	}
 	game.ticks++;
     }
 }
