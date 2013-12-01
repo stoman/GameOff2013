@@ -12,6 +12,7 @@ var game = {
 		"y": 0
 	    },
 	    "isJumping": false,
+	    "doubleJumpAvailable": true,
 	    "sprite": null
 	},
 	"arrows": [],
@@ -26,6 +27,7 @@ var game = {
 		"y": 0
 	    },
 	    "isJumping": false,
+	"doubleJumpAvailable": true,
 	    "sprite": null
 	},
 	"speed": 2,
@@ -172,17 +174,25 @@ function initialize() {
 	// handle user input
 	game.player.isJumping = mouseDown || keysPressed.indexOf(32) > -1;
 	game.followingWaiter.isJumping = false;
-	game.waiters.forEach(function(waiter) {
-	    if(waiter.position.x > game.followingWaiter.position.x && waiter.position.x < game.followingWaiter.position.x - 150 * waiter.speed.x) {
-		game.followingWaiter.isJumping = true;
-	    }
-	});
+	if(game.followingWaiter.position.y < 150) {
+        	game.waiters.forEach(function(waiter) {
+        	    if(waiter.position.x > game.followingWaiter.position.x && waiter.position.x < game.followingWaiter.position.x - 150 * waiter.speed.x) {
+        		game.followingWaiter.isJumping = true;
+        	    }
+        	});
+	}
 	
 	// jump
 	game.waiters.concat([game.player, game.followingWaiter]).forEach(function(agent) {
         	if(agent.isJumping) {
+        	    // first jump
         	    if(agent.position.y == getGroundHeight(agent.position.x)) {
         		agent.speed.y = 3.5;
+        	    }
+        	    // second jump
+        	    if(agent.speed.y < 0 && agent.doubleJumpAvailable) {
+        		agent.speed.y = 3.5;
+        		agent.doubleJumpAvailable = false;
         	    }
         	}
 	});
@@ -236,9 +246,10 @@ function initialize() {
 		agent.speed.y -= game.speed/40; 
 		agent.position.x += agent.speed.x * game.speed;
 		agent.position.y += agent.speed.y * game.speed;
-		if(agent.position.y <= getGroundHeight(agent.position.x)) {
+		if(agent.position.y <= getGroundHeight(agent.position.x && agent.speed.y < 0)) {
 		    agent.speed.y = 0;
 		    agent.position.y = getGroundHeight(agent.position.x);
+		    agent.doubleJumpAvailable = true;
 		}
 	
 		// reposition agents
@@ -380,7 +391,8 @@ function nextWaiter() {
 	    "x": Math.min(-1.1, -Math.sqrt(Math.sqrt(game.speed))),
 	    "y": 0
 	},
-	"isJumping": false
+	"isJumping": false,
+	"doubleJumpAvailable": true
     };
 }
 
