@@ -43,3 +43,10 @@ body {
 	max-height: 100px;
 	margin: 0 10px;
 }
+
+#mute {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	color: #ffffff;
+}

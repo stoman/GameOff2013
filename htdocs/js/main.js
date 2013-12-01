@@ -24,16 +24,17 @@ $(document).ready(function() {
     ]);
     loader.addEventListener("onComplete", function(event) {
 	// finished -> start game
-	var time = 100;//final: 2000;
+	var time = 500;//final: 2000;
 	$("#loading").fadeOut(time, function() {
 	    $("#splash1").fadeIn(time, function() {
 		setTimeout(function() {
-		    showInstructions();
 		    $("#splash1").fadeOut(time, function() {
 			    $("#splash2").fadeIn(time, function() {
+				showInstructions();
 				setTimeout(function() {
 				    $("#splash2").fadeOut(time, function() {
 					$("#game-canvas").fadeIn(time);
+					playBackgroundMusic();
 				    });
 				}, 1.5*time);
 			    });
@@ -53,7 +54,7 @@ $(document).ready(function() {
     $("#js-error").hide();
     $("#loading").show();
 });
-   
+
 $(window).load(function() {
     // setup renderer and stage
     canvas = $("#game-canvas");
@@ -618,4 +619,52 @@ function showInstructions() {
     againText.position.y = 500;
     againText.anchor.x = 0.5;
     stage.addChild(againText);
+}
+
+// sound
+var sound = new Audio("audio/rich-vines.wav");
+var muted = false;
+
+/**
+ * This function initializes the background music and plays it.
+ */
+function playBackgroundMusic() {
+    sound.loop = true;
+    if(!muted) {
+	sound.play();
+    }
+}
+
+/**
+ * This function mutes the background music and stops the replay. 
+ */
+function mute() {
+    muted = true;
+    if(sound != null) {
+	sound.pause();
+    }
+    $('#mute').html('Unmute').addClass('muted').removeClass('mute');
+}
+
+/**
+ * This function unmutes the background music and restart the replay. 
+ */
+function unmute() {
+    muted = false;
+    if(sound != null) {
+	sound.play();
+    }
+    $('#mute').html('Mute').removeClass('muted').addClass('mute');
+}
+
+/**
+ * This function toggles the background music and therefore mutes resp. unmutes it.
+ */
+function toggleMute() {
+    if(muted) {
+	unmute();
+    }
+    else {
+	mute();
+    }
 }
