@@ -256,11 +256,17 @@ function initialize() {
         	    // first jump
         	    if(agent.position.y == getGroundHeight(agent.position.x)) {
         		agent.speed.y = 3.5;
+			if(!muted && agent == game.player) {
+			    jump.play();
+			}
         	    }
         	    // second jump
         	    if(agent.speed.y < 0 && agent.doubleJumpAvailable) {
         		agent.speed.y = 3.5;
         		agent.doubleJumpAvailable = false;
+			if(!muted && agent == game.player) {
+			    jump.play();
+			}
         	    }
         	}
 	});
@@ -281,10 +287,16 @@ function initialize() {
 		if(game.arrows[i].type == "vertical") {
 			// jump
 			game.player.speed.y = 2.6;
+			if(!muted) {
+			    jump.play();
+			}
 		}
 		else {
 			// run
 			game.player.speed.x = 2;
+			if(!muted) {
+			    speed.play();
+			}
 		}
 	    }
 	}
@@ -720,6 +732,8 @@ var sound = new Audio("audio/rich-vines.wav");
 var hit = new Audio("audio/hit.wav");
 var coin = new Audio("audio/coin.wav");
 var start = new Audio("audio/start.wav");
+var jump = new Audio("audio/jump.wav");
+var speed = new Audio("audio/speed.wav");
 var muted = false;
 
 /**
