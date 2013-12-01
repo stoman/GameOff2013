@@ -171,7 +171,14 @@ function initialize() {
     function animate() {
 	// handle user input
 	game.player.isJumping = mouseDown || keysPressed.indexOf(32) > -1;
-	game.followingWaiter.isJumping = game.ticks % 300 == 0;
+	game.followingWaiter.isJumping = false;
+	game.waiters.forEach(function(waiter) {
+	    if(waiter.position.x > game.followingWaiter.position.x && waiter.position.x < game.followingWaiter.position.x - 150 * waiter.speed.x) {
+		game.followingWaiter.isJumping = true;
+	    }
+	});
+	
+	// jump
 	game.waiters.concat([game.player, game.followingWaiter]).forEach(function(agent) {
         	if(agent.isJumping) {
         	    if(agent.position.y == getGroundHeight(agent.position.x)) {
@@ -212,17 +219,10 @@ function initialize() {
 	    game.waiters.slice(0, 1);
 	}
 	
-	// detect arrow collisions
-	for(var i = 0; i < game.arrows.length; i++) {
-	    if(Math.abs(game.player.position.x - game.arrows[i].position.x) < 100 && Math.abs(game.player.position.y - game.arrows[i].position.y) < 100) {
-		if(game.arrows[i].type == "vertical") {
-			// jump
-			game.player.speed.y = 2.6;
-		}
-		else {
-			// run
-			game.player.speed.x = 2;
-		}
+	// detect waiter collisions
+	for(var i = 0; i < game.waiters.length; i++) {
+	    if(Math.abs(game.player.position.x - game.waiters[i].position.x) < 50 && Math.abs(game.player.position.y - game.waiters[i].position.y) < 100) {
+		//TODO
 	    }
 	}
 	
