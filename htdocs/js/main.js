@@ -28,7 +28,7 @@ $(document).ready(function() {
     ]);
     loader.addEventListener("onComplete", function(event) {
 	// finished -> start game
-	var time = 500;//final: 2000;
+	var time = 2000;
 	$("#loading").fadeOut(time, function() {
 	    $("#splash1").fadeIn(time, function() {
 		setTimeout(function() {
