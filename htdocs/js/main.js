@@ -33,6 +33,7 @@ $(document).ready(function() {
 	    $("#splash1").fadeIn(time, function() {
 		setTimeout(function() {
 		    $("#splash1").fadeOut(time, function() {
+			    setup();
 			    $("#splash2").fadeIn(time, function() {
 				showInstructions();
 				setTimeout(function() {
@@ -59,7 +60,7 @@ $(document).ready(function() {
     $("#loading").show();
 });
 
-$(window).load(function() {
+function setup() {
     // setup renderer and stage
     canvas = $("#game-canvas");
     renderer = new PIXI.autoDetectRenderer(
@@ -78,7 +79,10 @@ $(window).load(function() {
     	keysPressed.splice(keysPressed.indexOf(event.keyCode), 1);
         }
         if(event.keyCode == 32 && (game == null || game.readyToRestart)) {
-    	initialize();
+    		initialize();
+    		if(!muted) {
+    		    start.play();
+    		}
         }
         return event.keyCode != 32;
     };
@@ -88,16 +92,19 @@ $(window).load(function() {
     canvas[0].onmouseup = function() {
         mouseDown = false;
         if(game == null || game.readyToRestart) {
-    	initialize();
+            	initialize();
+		if(!muted) {
+    		    start.play();
+    		}
         }
     };
-});
+}
 
 /**
  * This function runs the game. It creates the renderer, the stage, the sprites
  * and so on.
  */
-function initialize() {
+function initialize() {    
     // game data
     game = {
     	"player": {
@@ -115,6 +122,7 @@ function initialize() {
     	},
     	"arrows": [],
     	"waiters": [],
+    	"coins": [],
     	"followingWaiter": {
     	    "position": {
     		"x": -170,
@@ -204,6 +212,10 @@ function initialize() {
     game.arrows = [nextArrow()];
     stage.addChild(game.arrows[0].sprite);
     
+    // coins
+    game.coins = [nextCoin()];
+    stage.addChild(game.coins[0].sprite);
+    
     // waiters
     game.waiters = [nextWaiter()];
     stage.addChild(game.waiters[0].sprite);
@@ -265,7 +277,7 @@ function initialize() {
 	// detect arrow collisions
 	for(var i = 0; i < game.arrows.length; i++) {
 	    if(Math.abs(game.player.position.x - game.arrows[i].position.x) < 100 && Math.abs(game.player.position.y - game.arrows[i].position.y) < 100) {
-	    game.score += 10;
+		game.score += 10;
 		if(game.arrows[i].type == "vertical") {
 			// jump
 			game.player.speed.y = 2.6;
@@ -273,6 +285,27 @@ function initialize() {
 		else {
 			// run
 			game.player.speed.x = 2;
+		}
+	    }
+	}
+	
+	// update coins
+	if(game.coins[game.coins.length-1].sprite.position.x <= renderer.width) {
+	    game.coins.push(nextCoin());
+	    stage.addChild(game.coins[game.coins.length-1].sprite);
+	}
+	if(game.coins[0].sprite.position.x <= -renderer.width) {
+	    game.coins.slice(0, 1);
+	}
+	
+	// detect coin collisions
+	for(var i = 0; i < game.coins.length; i++) {
+	    if(Math.abs(game.player.position.x - game.coins[i].position.x) < 50 && Math.abs(game.player.position.y - game.coins[i].position.y) < 70) {
+		game.score += 500;
+		stage.removeChild(game.coins[i].sprite);
+		game.coins.splice(i, 1);
+		if(!muted) {
+		    coin.play();
 		}
 	    }
 	}
@@ -291,6 +324,9 @@ function initialize() {
 	    if(Math.abs(game.player.position.x - game.waiters[i].position.x) < 50 && Math.abs(game.player.position.y - game.waiters[i].position.y) < 100) {
 		game.running = false;
 		showGameOver();
+		if(!muted) {
+		    hit.play();
+		}
 		setTimeout(function() {
 		    game.readyToRestart = true;
 		}, 2000);
@@ -324,6 +360,13 @@ function initialize() {
 		game.arrows[i].sprite.animationSpeed = game.speed / 10;
 		game.arrows[i].sprite.position.x = game.player.sprite.position.x - game.player.position.x + game.arrows[i].position.x;
 		game.arrows[i].sprite.position.y = game.player.sprite.position.y + game.player.position.y - game.arrows[i].position.y;
+	}
+	
+	// reposition coins
+	for(var i = 0; i < game.coins.length; i++) {
+		game.coins[i].sprite.animationSpeed = game.speed / 20;
+		game.coins[i].sprite.position.x = game.player.sprite.position.x - game.player.position.x + game.coins[i].position.x;
+		game.coins[i].sprite.position.y = game.player.sprite.position.y + game.player.position.y - game.coins[i].position.y;
 	}
 	
 	// reposition background
@@ -456,6 +499,52 @@ function nextWaiter() {
 	},
 	"isJumping": false,
 	"doubleJumpAvailable": true
+    };
+}
+
+/**
+ * This function computes the next coin to show to the user.
+ * @returns an object describing the coin, the sprite is contained in the key
+ * "sprite"
+ */
+function nextCoin() {
+    var x = game.coins.length == 0 ? game.player.position.x + 300 : 
+	game.coins[game.coins.length-1].position.x
+    	+ 50 + pseudoRandom(
+    		todaySeed(),
+    		game.coins[game.coins.length-1].position.x + 1,
+    		500
+    ); 
+    var y = pseudoRandom(
+    		todaySeed(),
+    		x,
+    		300
+    ); 
+    // create arrow
+    var coinFrames = [
+   	"coin1.png",
+     	"coin2.png",
+     	"coin3.png",
+     	"coin4.png",
+     	"coin3.png",
+     	"coin2.png"
+    ];
+    var coinTextures = [];
+    for(var i = 0; i < coinFrames.length; i++) {
+ 	coinTextures.push(PIXI.Texture.fromFrame(coinFrames[i]));
+    }
+    var coin = new PIXI.MovieClip(coinTextures);
+    coin.gotoAndPlay(0);
+    coin.anchor.x = 0.5;
+    coin.anchor.y = 1;
+    
+    // create return value
+    return {
+	"sprite": coin,
+	"position": {
+	    "x": x,
+	    "y": y
+	}
     };
 }
 
@@ -600,7 +689,7 @@ function showInstructions() {
     stage.addChild(hint2Text);
 
     //add hint3
-    var hint3Text = new PIXI.Text("Click or press space to jump and double jump.\nCollect as many points and power-ups as possible!", {
+    var hint3Text = new PIXI.Text("Click or press space to jump and double jump.\nCollect as many loose change and power-ups\nas possible to get a high score!", {
 	font: "bold italic 30px Arvo",
 	fill: "#253d48",
 	stroke: "#ffffff",
@@ -608,7 +697,7 @@ function showInstructions() {
 	align: "center"
     });
     hint3Text.position.x = renderer.width/2;
-    hint3Text.position.y = 400;
+    hint3Text.position.y = 380;
     hint3Text.anchor.x = 0.5;
     stage.addChild(hint3Text);
 
@@ -621,13 +710,16 @@ function showInstructions() {
 	align: "center"
     });
     againText.position.x = renderer.width/2;
-    againText.position.y = 500;
+    againText.position.y = 530;
     againText.anchor.x = 0.5;
     stage.addChild(againText);
 }
 
 // sound
 var sound = new Audio("audio/rich-vines.wav");
+var hit = new Audio("audio/hit.wav");
+var coin = new Audio("audio/coin.wav");
+var start = new Audio("audio/start.wav");
 var muted = false;
 
 /**
