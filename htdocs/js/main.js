@@ -77,7 +77,7 @@ $(window).load(function() {
         while(-1 < keysPressed.indexOf(event.keyCode)) {
     	keysPressed.splice(keysPressed.indexOf(event.keyCode), 1);
         }
-        if(event.keyCode == 32 && (game == null || !game.running)) {
+        if(event.keyCode == 32 && (game == null || game.readyToRestart)) {
     	initialize();
         }
         return event.keyCode != 32;
@@ -87,7 +87,7 @@ $(window).load(function() {
     };
     canvas[0].onmouseup = function() {
         mouseDown = false;
-        if(game == null || !game.running) {
+        if(game == null || game.readyToRestart) {
     	initialize();
         }
     };
@@ -131,7 +131,8 @@ function initialize() {
     	"speed": 2,
     	"ticks": 0,
     	"score": 0,
-    	"running": false
+    	"running": false,
+    	"readyToRestart": false
     };
 
     // setup renderer and stage
@@ -290,6 +291,9 @@ function initialize() {
 	    if(Math.abs(game.player.position.x - game.waiters[i].position.x) < 50 && Math.abs(game.player.position.y - game.waiters[i].position.y) < 100) {
 		game.running = false;
 		showGameOver();
+		setTimeout(function() {
+		    game.readyToRestart = true;
+		}, 2000);
 	    }
 	}
 	
@@ -438,7 +442,7 @@ function nextWaiter() {
     	+ 500 + pseudoRandom(
     		todaySeed(),
     		game.waiters[game.waiters.length-1].position.x + 1,
-    		Math.ceil(10000 / game.speed)
+    		Math.ceil(5000 / game.speed)
     );
     return {
 	"sprite": waiter,
@@ -544,6 +548,7 @@ function showGameOver() {
 function showInstructions() {
     initialize();
     game.running = false;
+    game.readyToRestart = true;
     
     //add gray layer
     var layer = new PIXI.Graphics();

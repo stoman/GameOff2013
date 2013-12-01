@@ -180,6 +180,29 @@
             <filename>arrow6.png</filename>
             <filename>arrow7.png</filename>
             <filename>arrow8.png</filename>
+            <filename>arrowh4.png</filename>
+            <filename>arrowh5.png</filename>
+            <filename>arrowh6.png</filename>
+            <filename>arrowh7.png</filename>
+            <filename>arrowh8.png</filename>
+            <filename>arrowh9.png</filename>
+            <filename>arrowh1.png</filename>
+            <filename>arrowh2.png</filename>
+            <filename>arrowh3.png</filename>
+            <filename>waiter_run1b.png</filename>
+            <filename>waiter_run1f.png</filename>
+            <filename>waiter_run2b.png</filename>
+            <filename>waiter_run2f.png</filename>
+            <filename>waiter_stand.png</filename>
+            <filename>waiter2_run2f.png</filename>
+            <filename>waiter2_stand.png</filename>
+            <filename>waiter2_run1b.png</filename>
+            <filename>waiter2_run1f.png</filename>
+            <filename>waiter2_run2b.png</filename>
+            <filename>coin3.png</filename>
+            <filename>coin4.png</filename>
+            <filename>coin1.png</filename>
+            <filename>coin2.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

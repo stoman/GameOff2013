@@ -144,6 +144,38 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
 	"sourceSize": {"w":128,"h":128}
 },
+"coin1.png":
+{
+	"frame": {"x":36,"y":912,"w":32,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+	"sourceSize": {"w":32,"h":32}
+},
+"coin2.png":
+{
+	"frame": {"x":2,"y":980,"w":32,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+	"sourceSize": {"w":32,"h":32}
+},
+"coin3.png":
+{
+	"frame": {"x":2,"y":946,"w":32,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+	"sourceSize": {"w":32,"h":32}
+},
+"coin4.png":
+{
+	"frame": {"x":2,"y":912,"w":32,"h":32},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+	"sourceSize": {"w":32,"h":32}
+},
 "player_run1b.png":
 {
 	"frame": {"x":132,"y":262,"w":128,"h":128},
@@ -271,6 +303,6 @@
 	"format": "RGBA8888",
 	"size": {"w":1024,"h":1024},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:66907bd34b3a1e6fdff90e01ce57ce39:f6dafeda2d0a2a2792df94a0be79cf1b:1eabdf11f75e3a4fe3147baf7b5be24b$"
+	"smartupdate": "$TexturePacker:SmartUpdate:044b639e0a6c4bddce3fbf17398e0931:7e2cd97b101fe69710fc46657720e578:1eabdf11f75e3a4fe3147baf7b5be24b$"
 }
 }
