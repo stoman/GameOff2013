@@ -28,7 +28,7 @@ var game = {
 	    "isJumping": false,
 	    "sprite": null
 	},
-	"speed": 1.5,
+	"speed": 2,
 	"ticks": 0
 };
 
@@ -313,7 +313,7 @@ function nextArrow() {
     		game.arrows[game.arrows.length-1].position.x + 1,
     		1200
     ); 
-    var type = x % 2 == 0 ? "vertical" : "horizontal";
+    var type = x % 4 < 2 ? "vertical" : "horizontal";
 
     // create arrow
     var arrowTextures = [];
@@ -363,20 +363,21 @@ function nextWaiter() {
     waiter.anchor.y = 1;
     
     // create return value
+    var x = game.waiters.length == 0 ? game.player.position.x + 1000 : 
+	game.waiters[game.waiters.length-1].position.x
+    	+ 500 + pseudoRandom(
+    		todaySeed(),
+    		game.waiters[game.waiters.length-1].position.x + 1,
+    		Math.ceil(10000 / game.speed)
+    );
     return {
 	"sprite": waiter,
 	"position": {
-	    "x": game.waiters.length == 0 ? game.player.position.x + 1000 : 
-		game.waiters[game.waiters.length-1].position.x
-	    	+ 200 + pseudoRandom(
-	    		todaySeed(),
-	    		game.waiters[game.waiters.length-1].position.x + 1,
-	    		Math.ceil(5000 / game.speed)
-	    ),
-	    "y": 150
+	    "x": x,
+	    "y": 0
 	},
 	"speed": {
-	    "x": -1.5 * game.speed,
+	    "x": Math.min(-1.1, -Math.sqrt(Math.sqrt(game.speed))),
 	    "y": 0
 	},
 	"isJumping": false
