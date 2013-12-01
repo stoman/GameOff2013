@@ -15,7 +15,8 @@ var game = {
 	    "sprite": null
 	},
 	"arrows": [],
-	"waiter": {
+	"waiters": [],
+	"followingWaiter": {
 	    "position": {
 		"x": -170,
 		"y": 0
@@ -27,7 +28,7 @@ var game = {
 	    "isJumping": false,
 	    "sprite": null
 	},
-	"speed": 2,
+	"speed": 1.5,
 	"ticks": 0
 };
 
@@ -136,8 +137,8 @@ function initialize() {
     game.player.sprite.anchor.y = 1;
     stage.addChild(game.player.sprite);
     
-    // waiter
-    var waiterFrames = [
+    // followingWaiter
+    var followingWaiterFrames = [
     	"waiter_stand.png",
     	"waiter_run1f.png",
     	"waiter_run2f.png",
@@ -147,27 +148,31 @@ function initialize() {
     	"waiter_run2b.png",
     	"waiter_run1b.png"
     ];
-    var waiterTextures = [];
-    for(var i = 0; i < waiterFrames.length; i++) {
-	waiterTextures.push(PIXI.Texture.fromFrame(waiterFrames[i]));
+    var followingWaiterTextures = [];
+    for(var i = 0; i < followingWaiterFrames.length; i++) {
+	followingWaiterTextures.push(PIXI.Texture.fromFrame(followingWaiterFrames[i]));
     }
-    game.waiter.sprite = new PIXI.MovieClip(waiterTextures);
-    game.waiter.sprite.gotoAndPlay(0);
-    game.waiter.sprite.anchor.x = 0.5;
-    game.waiter.sprite.anchor.y = 1;
-    stage.addChild(game.waiter.sprite);
+    game.followingWaiter.sprite = new PIXI.MovieClip(followingWaiterTextures);
+    game.followingWaiter.sprite.gotoAndPlay(0);
+    game.followingWaiter.sprite.anchor.x = 0.5;
+    game.followingWaiter.sprite.anchor.y = 1;
+    stage.addChild(game.followingWaiter.sprite);
     
     // arrows
     game.arrows = [nextArrow()];
     stage.addChild(game.arrows[0].sprite);
+    
+    // waiters
+    game.waiters = [nextWaiter()];
+    stage.addChild(game.waiters[0].sprite);
     
     // animate
     requestAnimFrame(animate);
     function animate() {
 	// handle user input
 	game.player.isJumping = mouseDown || keysPressed.indexOf(32) > -1;
-	game.waiter.isJumping = game.ticks % 300 == 0;
-	[game.player, game.waiter].forEach(function(agent) {
+	game.followingWaiter.isJumping = game.ticks % 300 == 0;
+	game.waiters.concat([game.player, game.followingWaiter]).forEach(function(agent) {
         	if(agent.isJumping) {
         	    if(agent.position.y == getGroundHeight(agent.position.x)) {
         		agent.speed.y = 3.5;
@@ -183,6 +188,31 @@ function initialize() {
 	if(game.arrows[0].sprite.position.x <= -renderer.width) {
 	    game.arrows.slice(0, 1);
 	}
+	
+	// detect arrow collisions
+	for(var i = 0; i < game.arrows.length; i++) {
+	    if(Math.abs(game.player.position.x - game.arrows[i].position.x) < 100 && Math.abs(game.player.position.y - game.arrows[i].position.y) < 100) {
+		if(game.arrows[i].type == "vertical") {
+			// jump
+			game.player.speed.y = 2.6;
+		}
+		else {
+			// run
+			game.player.speed.x = 2;
+		}
+	    }
+	}
+	
+	// update waiters
+	if(game.waiters[game.waiters.length-1].sprite.position.x <= renderer.width) {
+	    game.waiters.push(nextWaiter());
+	    stage.addChild(game.waiters[game.waiters.length-1].sprite);
+	}
+	if(game.waiters[0].sprite.position.x <= -renderer.width) {
+	    game.waiters.slice(0, 1);
+	}
+	
+	// detect arrow collisions
 	for(var i = 0; i < game.arrows.length; i++) {
 	    if(Math.abs(game.player.position.x - game.arrows[i].position.x) < 100 && Math.abs(game.player.position.y - game.arrows[i].position.y) < 100) {
 		if(game.arrows[i].type == "vertical") {
@@ -200,9 +230,9 @@ function initialize() {
 	if(game.ticks % 1000 == 0) {
 	    game.speed *= 1.1;
 	}
-	game.waiter.speed.x = game.player.speed.x;
-	[game.player, game.waiter].forEach(function(agent) {
-		agent.speed.x += (1 - agent.speed.x) / 300; 
+	game.player.speed.x += (1 - game.player.speed.x) / 300; 
+	game.followingWaiter.speed.x = game.player.speed.x;
+	game.waiters.concat([game.player, game.followingWaiter]).forEach(function(agent) {
 		agent.speed.y -= game.speed/40; 
 		agent.position.x += agent.speed.x * game.speed;
 		agent.position.y += agent.speed.y * game.speed;
@@ -214,7 +244,7 @@ function initialize() {
 		// reposition agents
 		agent.sprite.position.x = 200 + agent.position.x - game.player.position.x;
 		agent.sprite.position.y = 475 - agent.position.y;
-		agent.sprite.animationSpeed = agent.speed.x * game.speed / 15;
+		agent.sprite.animationSpeed = Math.abs(agent.speed.x) * game.speed / 15;
 	});
 		
 	// reposition arrows
@@ -284,6 +314,7 @@ function nextArrow() {
     		1200
     ); 
     var type = x % 2 == 0 ? "vertical" : "horizontal";
+
     // create arrow
     var arrowTextures = [];
     for(var i = 1; i <= 9; i++) {
@@ -302,6 +333,53 @@ function nextArrow() {
 	    "x": x,
 	    "y": 150
 	}
+    };
+}
+
+/**
+ * This function computes the next waiter to try to catch the user.
+ * @returns an object describing the waiter, the sprite is contained in the key
+ * "sprite"
+ */
+function nextWaiter() {
+    // create waiter
+    var waiterFrames = [
+     	"waiter2_stand.png",
+     	"waiter2_run1f.png",
+     	"waiter2_run2f.png",
+     	"waiter2_run1f.png",
+     	"waiter2_stand.png",
+     	"waiter2_run1b.png",
+     	"waiter2_run2b.png",
+     	"waiter2_run1b.png"
+    ];
+    var waiterTextures = [];
+    for(var i = 0; i < waiterFrames.length; i++) {
+ 	waiterTextures.push(PIXI.Texture.fromFrame(waiterFrames[i]));
+    }
+    var waiter = new PIXI.MovieClip(waiterTextures);
+    waiter.gotoAndPlay(0);
+    waiter.anchor.x = 0.5;
+    waiter.anchor.y = 1;
+    
+    // create return value
+    return {
+	"sprite": waiter,
+	"position": {
+	    "x": game.waiters.length == 0 ? game.player.position.x + 1000 : 
+		game.waiters[game.waiters.length-1].position.x
+	    	+ 200 + pseudoRandom(
+	    		todaySeed(),
+	    		game.waiters[game.waiters.length-1].position.x + 1,
+	    		Math.ceil(5000 / game.speed)
+	    ),
+	    "y": 150
+	},
+	"speed": {
+	    "x": -1.5 * game.speed,
+	    "y": 0
+	},
+	"isJumping": false
     };
 }
 
