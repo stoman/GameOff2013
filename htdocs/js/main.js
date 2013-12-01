@@ -31,7 +31,8 @@ var game = {
 	    "sprite": null
 	},
 	"speed": 2,
-	"ticks": 0
+	"ticks": 0,
+	"score": 0
 };
 
 // preloader
@@ -168,9 +169,23 @@ function initialize() {
     game.waiters = [nextWaiter()];
     stage.addChild(game.waiters[0].sprite);
     
+    var scoreText = new PIXI.Text("", {
+	font: "bold italic 36px Arvo",
+	fill: "#3e1707",
+	stroke: "#ffffff",
+	strokeThickness: 7
+    });
+    scoreText.position.x = 10;
+    scoreText.position.y = 10;
+    stage.addChild(scoreText);
+
     // animate
     requestAnimFrame(animate);
     function animate() {
+	//compute score
+	game.score += Math.sqrt(10000 + game.player.position.x) / 1000;
+	scoreText.setText("Score: "+Math.floor(game.score));
+	
 	// handle user input
 	game.player.isJumping = mouseDown || keysPressed.indexOf(32) > -1;
 	game.followingWaiter.isJumping = false;
@@ -209,6 +224,7 @@ function initialize() {
 	// detect arrow collisions
 	for(var i = 0; i < game.arrows.length; i++) {
 	    if(Math.abs(game.player.position.x - game.arrows[i].position.x) < 100 && Math.abs(game.player.position.y - game.arrows[i].position.y) < 100) {
+	    game.score += 10;
 		if(game.arrows[i].type == "vertical") {
 			// jump
 			game.player.speed.y = 2.6;
