@@ -24,11 +24,11 @@ $(document).ready(function() {
     ]);
     loader.addEventListener("onComplete", function(event) {
 	// finished -> start game
-	initialize();
-	var time = 0;//final: 2000;
+	var time = 100;//final: 2000;
 	$("#loading").fadeOut(time, function() {
 	    $("#splash1").fadeIn(time, function() {
 		setTimeout(function() {
+		    showInstructions();
 		    $("#splash1").fadeOut(time, function() {
 			    $("#splash2").fadeIn(time, function() {
 				setTimeout(function() {
@@ -180,7 +180,7 @@ function initialize() {
     
     var scoreText = new PIXI.Text("", {
 	font: "bold italic 36px Arvo",
-	fill: "#3e1707",
+	fill: "#253d48",
 	stroke: "#ffffff",
 	strokeThickness: 7
     });
@@ -260,6 +260,7 @@ function initialize() {
 	for(var i = 0; i < game.waiters.length; i++) {
 	    if(Math.abs(game.player.position.x - game.waiters[i].position.x) < 50 && Math.abs(game.player.position.y - game.waiters[i].position.y) < 100) {
 		game.running = false;
+		showGameOver();
 	    }
 	}
 	
@@ -438,6 +439,9 @@ document.onkeyup = function(event) {
     while(-1 < keysPressed.indexOf(event.keyCode)) {
 	keysPressed.splice(keysPressed.indexOf(event.keyCode), 1);
     }
+    if(event.keyCode == 32 && (game == null || !game.running)) {
+	initialize();
+    }
     return event.keyCode != 32;
 };
 document.onmousedown = function() {
@@ -445,6 +449,9 @@ document.onmousedown = function() {
 };
 document.onmouseup = function() {
     mouseDown = false;
+    if(game == null || !game.running) {
+	initialize();
+    }
 };
 
 /**
@@ -472,4 +479,143 @@ function pseudoRandom(seed, nr, max) {
 function todaySeed() {
     today = new Date();
     return today.getDay() + 100 * today.getMonth() + 10000 * today.getYear();
+}
+
+/**
+ * This function is called when the player has died. The score and some
+ * comments will be displayed.
+ */
+function showGameOver() {
+    //add gray layer
+    var layer = new PIXI.Graphics();
+    layer.lineStyle(0);
+    layer.beginFill(0xc0c0c0, 0.7);
+    layer.moveTo(0, 0);
+    layer.lineTo(renderer.width, 0);
+    layer.lineTo(renderer.width, renderer.height);
+    layer.lineTo(0, renderer.height);
+    layer.endFill();
+    stage.addChild(layer);
+    
+    //add title
+    var titleText = new PIXI.Text("Damn! They took your\nloose change as a tip.", {
+	font: "bold italic 40px Arvo",
+	fill: "#253d48",
+	stroke: "#ffffff",
+	strokeThickness: 7,
+	align: "center"
+    });
+    titleText.position.x = renderer.width/2;
+    titleText.position.y = 100;
+    titleText.anchor.x = 0.5;
+    stage.addChild(titleText);
+
+    //add score
+    var scoreText = new PIXI.Text("Final Score: "+Math.floor(game.score), {
+	font: "bold italic 75px Arvo",
+	fill: "#253d48",
+	stroke: "#ffffff",
+	strokeThickness: 7,
+	align: "center"
+    });
+    scoreText.position.x = renderer.width/2;
+    scoreText.position.y = 250;
+    scoreText.anchor.x = 0.5;
+    stage.addChild(scoreText);
+
+    //add play again
+    var againText = new PIXI.Text("Click or press space\nto restart the game.", {
+	font: "bold italic 40px Arvo",
+	fill: "#253d48",
+	stroke: "#ffffff",
+	strokeThickness: 7,
+	align: "center"
+    });
+    againText.position.x = renderer.width/2;
+    againText.position.y = 400;
+    againText.anchor.x = 0.5;
+    stage.addChild(againText);
+}
+
+/**
+ * This functions displays some instructions for the game.
+ */
+function showInstructions() {
+    initialize();
+    game.running = false;
+    
+    //add gray layer
+    var layer = new PIXI.Graphics();
+    layer.lineStyle(0);
+    layer.beginFill(0xc0c0c0, 0.85);
+    layer.moveTo(0, 0);
+    layer.lineTo(renderer.width, 0);
+    layer.lineTo(renderer.width, renderer.height);
+    layer.lineTo(0, renderer.height);
+    layer.endFill();
+    stage.addChild(layer);
+    
+    // player
+    var player = new PIXI.Sprite.fromFrame("player_stand.png");
+    player.position.x = 30;
+    player.position.y = 50;
+    stage.addChild(player);
+    
+    // followingWaiter
+    var waiter = new PIXI.Sprite.fromFrame("waiter2_stand.png");
+    waiter.position.x = 550;
+    waiter.position.y = 240;
+    stage.addChild(waiter);
+
+    //add hint1
+    var hint1Text = new PIXI.Text("This is you.\nYou were dining at a good restaurant.\nNow, you want to keep your loose\nchange and avoid tips.", {
+	font: "bold italic 30px Arvo",
+	fill: "#253d48",
+	stroke: "#ffffff",
+	strokeThickness: 7,
+	align: "center"
+    });
+    hint1Text.position.x = renderer.width/2 + 50;
+    hint1Text.position.y = 20;
+    hint1Text.anchor.x = 0.5;
+    stage.addChild(hint1Text);
+
+    //add hint2
+    var hint2Text = new PIXI.Text("These are the waiters.\nThey want your well-earned money,\nso try to escape them.", {
+	font: "bold italic 30px Arvo",
+	fill: "#253d48",
+	stroke: "#ffffff",
+	strokeThickness: 7,
+	align: "center"
+    });
+    hint2Text.position.x = renderer.width/2 - 50;
+    hint2Text.position.y = 240;
+    hint2Text.anchor.x = 0.5;
+    stage.addChild(hint2Text);
+
+    //add hint3
+    var hint3Text = new PIXI.Text("Click or press space to jump and double jump.\nCollect as many points and power-ups as possible!", {
+	font: "bold italic 30px Arvo",
+	fill: "#253d48",
+	stroke: "#ffffff",
+	strokeThickness: 7,
+	align: "center"
+    });
+    hint3Text.position.x = renderer.width/2;
+    hint3Text.position.y = 400;
+    hint3Text.anchor.x = 0.5;
+    stage.addChild(hint3Text);
+
+    //add play again 
+    var againText = new PIXI.Text("Click or press space to start the game.", {
+	font: "bold italic 40px Arvo",
+	fill: "#253d48",
+	stroke: "#ffffff",
+	strokeThickness: 7,
+	align: "center"
+    });
+    againText.position.x = renderer.width/2;
+    againText.position.y = 500;
+    againText.anchor.x = 0.5;
+    stage.addChild(againText);
 }
