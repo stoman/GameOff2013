@@ -1,0 +1,8 @@
+#main-container {
+	margin: 0 auto !important;
+}
+
+#mute {
+	bottom: 5px !important;
+	right: 5px !important;
+}

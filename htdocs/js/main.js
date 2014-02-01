@@ -255,18 +255,20 @@ function initialize() {
         	if(agent.isJumping) {
         	    // first jump
         	    if(agent.position.y == getGroundHeight(agent.position.x)) {
-        		agent.speed.y = 3.5;
-			if(!muted && agent == game.player) {
-			    jump.play();
-			}
+					agent.speed.y = 3.5;
+					if(!muted && agent == game.player) {
+						jump.play();
+					}
+					document.dispatchEvent(new Event("jumped"));
         	    }
         	    // second jump
         	    if(agent.speed.y < 0 && agent.doubleJumpAvailable) {
-        		agent.speed.y = 3.5;
-        		agent.doubleJumpAvailable = false;
-			if(!muted && agent == game.player) {
-			    jump.play();
-			}
+					agent.speed.y = 3.5;
+					agent.doubleJumpAvailable = false;
+					if(!muted && agent == game.player) {
+						jump.play();
+					}
+					document.dispatchEvent(new Event("doubleJumped"));
         	    }
         	}
 	});
@@ -277,7 +279,7 @@ function initialize() {
 	    stage.addChild(game.arrows[game.arrows.length-1].sprite);
 	}
 	if(game.arrows[0].sprite.position.x <= -renderer.width) {
-	    game.arrows.slice(0, 1);
+	    game.arrows.splice(0, 1);
 	}
 	
 	// detect arrow collisions
@@ -307,7 +309,7 @@ function initialize() {
 	    stage.addChild(game.coins[game.coins.length-1].sprite);
 	}
 	if(game.coins[0].sprite.position.x <= -renderer.width) {
-	    game.coins.slice(0, 1);
+	    game.coins.splice(0, 1);
 	}
 	
 	// detect coin collisions
@@ -328,7 +330,8 @@ function initialize() {
 	    stage.addChild(game.waiters[game.waiters.length-1].sprite);
 	}
 	if(game.waiters[0].sprite.position.x <= -renderer.width) {
-	    game.waiters.slice(0, 1);
+	    game.waiters.splice(0, 1);
+		document.dispatchEvent(new Event("enemyAvoided"));
 	}
 	
 	// detect waiter collisions
@@ -336,6 +339,7 @@ function initialize() {
 	    if(Math.abs(game.player.position.x - game.waiters[i].position.x) < 50 && Math.abs(game.player.position.y - game.waiters[i].position.y) < 100) {
 		game.running = false;
 		showGameOver();
+		document.dispatchEvent(new CustomEvent("gameFinished", {"detail": Math.floor(game.score)}));
 		if(!muted) {
 		    hit.play();
 		}
